@@ -15,12 +15,17 @@ import {Message, MessageService} from "primeng/api";
 export class PageUsuariosComponent implements OnInit {
   public usuarios: Usuario[];
   public cargandoUsuarios: boolean;
+  public borrandoUsuario: boolean;
+  public ejecutandoBorrar: boolean;
 
   constructor(
-    private usuariosService: UsuariosService, private mensajeService: MessageService
+    private usuariosService: UsuariosService,
+    private mensajeService: MessageService
   ) {
     this.usuarios = []
     this.cargandoUsuarios = false;
+    this.borrandoUsuario = false;
+    this.ejecutandoBorrar = false;
   }
 
   ngOnInit(): void {
@@ -37,7 +42,7 @@ export class PageUsuariosComponent implements OnInit {
           this.cargandoUsuarios = false;
         },
         error: (error: HttpErrorResponse) => {
-          console.log("Herror al recuperar datos ", error);
+          console.log("Error al recuperar datos ", error);
           this.cargandoUsuarios = false;
         }
       }
@@ -45,30 +50,44 @@ export class PageUsuariosComponent implements OnInit {
   }
 
   public borrarUsuario(usuario: Usuario) {
+    if (this.ejecutandoBorrar){
+      return
+    }
+    this.borrandoUsuario = true;
+    this.ejecutandoBorrar = true;
     this.usuariosService.borrarUsuario(usuario).subscribe(
       {
         next: () => {
-          const mensaje:Message = {
+          const mensaje: Message = {
             summary: "Borrar",
             detail: "Usuario borrado satisfactoriamente",
             severity: "success"
           };
+          this.mensajeService.add(mensaje);
+          this.borrandoUsuario = false;
+          this.ejecutandoBorrar = false
+          this.cargarUsuarios();
         },
-        error: (error: HttpErrorResponse) => {
-          const mensaje:Message = {
+        error: (datos: HttpErrorResponse) => {
+          const mensaje: Message = {
             summary: "Borrar",
-            detail: "Hubo un error al borrar. " + error.message,
+            detail: "Hubo un error al borrar: " + datos.message,
             severity: "error"
-          };        }
+          };
+          this.borrandoUsuario = false;
+          this.ejecutandoBorrar = false;
+          this.mensajeService.add(mensaje);
+        }
+
       }
     );
   }
 
   obtenerEstiloPorRol(rol: string): string {
     switch (rol) {
-      case "administrador" :
+      case "administrador":
         return "success";
-      case 'usuario' :
+      case 'usuario':
         return "primary";
       case "visor":
         return "warning";

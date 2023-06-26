@@ -44,7 +44,7 @@
         </td>
         <td>
           <div class="flex flex-wrap gap-3 justify-content-center">
-            <p-button (click)="borrarUsuario(usuario)" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger"></p-button>
+            <p-button (click)="borrarUsuario(usuario)" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger" [disabled]="borrandoUsuario"></p-button>
             <p-button icon="pi pi-pencil" styleClass="p-button-rounded p-button-warning"></p-button>
 
 
