@@ -5,6 +5,9 @@ import {MenubarModule} from "primeng/menubar";
 import {ButtonModule} from "primeng/button";
 import {CardModule} from "primeng/card";
 import {TableModule} from "primeng/table";
+import {ProgressBarModule} from "primeng/progressbar";
+import {TagModule} from "primeng/tag";
+import {ToastModule} from "primeng/toast";
 
 
 
@@ -17,7 +20,10 @@ import {TableModule} from "primeng/table";
     MenubarModule,
     ButtonModule,
     CardModule,
-    TableModule
+    TableModule,
+    ProgressBarModule,
+    TagModule,
+    ToastModule
   ]
 
 

@@ -1,5 +1,61 @@
 <p-card>
 
+  <p-progressBar *ngIf="cargandoUsuarios" mode="indeterminate" styleClass="h-1rem"  ></p-progressBar>
+
+  <p-table
+    [value]="usuarios"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [rowHover]="true"
+    styleClass="p-datatable-gridlines"
+    [loading]="cargandoUsuarios"
+    [paginator]="true"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [showCurrentPageReport] = true
+    currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords}"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>ID</th>
+        <th pSortableColumn="nombre">Nombre<p-sortIcon field="nombre"></p-sortIcon> </th>
+        <th>Correo</th>
+        <th pSortableColumn="rol.rol">Rol <p-sortIcon field="rol.rol"></p-sortIcon></th>
+        <th>Admin</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-usuario>
+      <tr>
+        <td>{{ usuario.id }}</td>
+        <td>{{ usuario.nombre }}</td>
+        <td>{{ usuario.correo }}</td>
+        <td><p-tag icon="pi pi-user" [rounded]="true" [value]="usuario.rol.rol" [severity]="obtenerEstiloPorRol(usuario.rol.rol)"></p-tag></td>
+        <td>
+          <!--
+          <i *ngIf="usuario.admin" class="pi pi-check-circle" style="color: green"></i>
+          <i *ngIf="!usuario.admin" class="pi pi-times-circle" style="color: tomato"></i>
+          -->
+
+          <i class="pi"
+             [class]="usuario.admin ? 'pi-check-circle':'pi-times-circle'"
+             [style]="{color :  + usuario.admin ? 'lightgreen' : 'tomato'}"
+          ></i>
+
+        </td>
+        <td>
+          <div class="flex flex-wrap gap-3 justify-content-center">
+            <p-button (click)="borrarUsuario(usuario)" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger"></p-button>
+            <p-button icon="pi pi-pencil" styleClass="p-button-rounded p-button-warning"></p-button>
+
+
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 
 
 </p-card>
+
+<!--Toas-->
+<p-toast></p-toast>

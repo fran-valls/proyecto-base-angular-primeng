@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NavComponent } from './components/nav/nav.component';
 import { InicioComponent } from './components/inicio/inicio.component';
 import {PrimengModule} from "../primeng/primeng.module";
+import {HttpClientModule} from "@angular/common/http";
 
 
 
@@ -16,7 +17,8 @@ import {PrimengModule} from "../primeng/primeng.module";
   ],
   imports: [
     CommonModule,
-    PrimengModule
+    PrimengModule,
+    HttpClientModule
   ]
 })
 export class SharedModule { }
