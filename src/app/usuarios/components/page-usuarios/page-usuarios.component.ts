@@ -16,7 +16,6 @@ export class PageUsuariosComponent implements OnInit {
   public usuarios: Usuario[];
   public cargandoUsuarios: boolean;
   public borrandoUsuario: boolean;
-  public ejecutandoBorrar: boolean;
 
   constructor(
     private usuariosService: UsuariosService,
@@ -25,7 +24,6 @@ export class PageUsuariosComponent implements OnInit {
     this.usuarios = []
     this.cargandoUsuarios = false;
     this.borrandoUsuario = false;
-    this.ejecutandoBorrar = false;
   }
 
   ngOnInit(): void {
@@ -50,11 +48,10 @@ export class PageUsuariosComponent implements OnInit {
   }
 
   public borrarUsuario(usuario: Usuario) {
-    if (this.ejecutandoBorrar){
+    if (this.borrandoUsuario){
       return
     }
     this.borrandoUsuario = true;
-    this.ejecutandoBorrar = true;
     this.usuariosService.borrarUsuario(usuario).subscribe(
       {
         next: () => {
@@ -65,17 +62,15 @@ export class PageUsuariosComponent implements OnInit {
           };
           this.mensajeService.add(mensaje);
           this.borrandoUsuario = false;
-          this.ejecutandoBorrar = false
           this.cargarUsuarios();
         },
-        error: (datos: HttpErrorResponse) => {
+        error: (error: HttpErrorResponse) => {
           const mensaje: Message = {
             summary: "Borrar",
-            detail: "Hubo un error al borrar: " + datos.message,
+            detail: "Hubo un error al borrar: " + error.message,
             severity: "error"
           };
           this.borrandoUsuario = false;
-          this.ejecutandoBorrar = false;
           this.mensajeService.add(mensaje);
         }
 
