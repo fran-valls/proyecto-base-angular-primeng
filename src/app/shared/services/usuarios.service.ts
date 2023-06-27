@@ -21,4 +21,8 @@ export class UsuariosService {
   public borrarUsuario(usuario:Usuario): Observable<Usuario> {
     return this.httpClient.delete<Usuario>(`${this.url}/usuarios/${usuario.id}`);
   }
+
+  public guardarUsuario(usuario: Usuario): Observable<Usuario>{
+    return this.httpClient.post<Usuario>(`${this.url}/usuarios`, usuario);
+  }
 }

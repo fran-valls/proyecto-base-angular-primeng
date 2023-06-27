@@ -8,6 +8,11 @@ import {TableModule} from "primeng/table";
 import {ProgressBarModule} from "primeng/progressbar";
 import {TagModule} from "primeng/tag";
 import {ToastModule} from "primeng/toast";
+import {ConfirmPopupModule} from "primeng/confirmpopup";
+import {DialogModule} from "primeng/dialog";
+import {InputTextModule} from "primeng/inputtext";
+import {PasswordModule} from "primeng/password";
+import {DropdownModule} from "primeng/dropdown";
 
 
 
@@ -23,7 +28,12 @@ import {ToastModule} from "primeng/toast";
     TableModule,
     ProgressBarModule,
     TagModule,
-    ToastModule
+    ToastModule,
+    ConfirmPopupModule,
+    DialogModule,
+    InputTextModule,
+    PasswordModule,
+    DropdownModule
   ]
 
 

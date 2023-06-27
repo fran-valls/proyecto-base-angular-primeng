@@ -2,6 +2,23 @@
 
   <p-progressBar *ngIf="cargandoUsuarios" mode="indeterminate" styleClass="h-1rem"  ></p-progressBar>
 
+  <div class="flex justify-content-end mb-2 p-3 gap-3">
+    <p-button
+      (click)="cargarUsuarios()"
+      [loading]="cargandoUsuarios"
+      icon="pi pi-refresh"
+      label="Recargar"
+      class="p-button-info"
+    ></p-button>
+    <p-button
+      (click)="mostrarDialogoUsuario()"
+      icon="pi pi-user-plus"
+      label="Nuevo usuario"
+      styleClass="p-button-success"
+    >
+
+    </p-button>
+  </div>
   <p-table
     [value]="usuarios"
     [tableStyle]="{ 'min-width': '50rem' }"
@@ -44,7 +61,7 @@
         </td>
         <td>
           <div class="flex flex-wrap gap-3 justify-content-center">
-            <p-button (click)="borrarUsuario(usuario)" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger" [disabled]="borrandoUsuario"></p-button>
+            <p-button (click)="confirmarBorrar(usuario, $event)" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger" [disabled]="borrandoUsuario"></p-button>
             <p-button icon="pi pi-pencil" styleClass="p-button-rounded p-button-warning"></p-button>
 
 
@@ -56,6 +73,63 @@
 
 
 </p-card>
+<div>
+  <!--Toas-->
+  <p-toast></p-toast>
+  <!-- Popup-->
+  <p-confirmPopup></p-confirmPopup>
+  <p-dialog
+    [(visible)]="dialogoNuevoUsuarioVisible"
+    [modal]="true"
+    [maximizable]="true"
+    header="Nuevo usuario"
+  >
 
-<!--Toas-->
-<p-toast></p-toast>
+    <form class="mt-4" [formGroup]="formUsuario" (ngSubmit)="validarFormulario()">
+      <div class="formgrid grid">
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input pInputText id="nombre" type="text" class="w-full" formControlName="nombre"/>
+            <label htmlFor="nombre">Nombre </label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input pInputText id="correo" type="text" class="w-full" formControlName="correo"/>
+            <label htmlFor="correo">Correo </label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+<!--            <input pInputText id="clave" type="password" class="w-full"/>-->
+            <p-password id="clave" class="w-full" [toggleMask]="true" formControlName="clave"></p-password>
+            <label htmlFor="clave">Contraseña </label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <p-dropdown  styleClass="w-full" appendTo="body" [options]="roles" optionLabel="rol" formControlName="rol"></p-dropdown>
+          </span>
+        </div>
+
+      </div>
+
+      <div class="flex justify-content-end">
+        <p-button
+          icon="pi pi-save"
+          label="Guardar"
+          type="submit"
+          styleClass="p-button-success"
+          [loading]="guardandoUsuario"
+        ></p-button>
+      </div>
+    </form>
+    <div class="p-message p-message-info">
+      <code>
+        <p>Value: {{formUsuario.value | json}}</p>
+
+      </code>
+
+    </div>
+  </p-dialog>
+</div>

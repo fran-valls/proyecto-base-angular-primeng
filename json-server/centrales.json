@@ -334,6 +334,40 @@
       "correo": "visor@empresa.com",
       "clave": "123456",
       "admin": false
+    },
+    {
+      "nombre": "Otro",
+      "correo": "Otro@hotmail.com",
+      "clave": "1245",
+      "rol": {
+        "id": 3,
+        "rol": "visor"
+      },
+      "id": 8
+    },
+    {
+      "nombre": "Fran",
+      "correo": "admin@accenture.com",
+      "clave": "5467",
+      "rol": {
+        "id": 3,
+        "rol": "visor"
+      },
+      "id": 9
+    },
+    {
+      "nombre": "Via Láctea",
+      "correo": "sdfg",
+      "clave": "564654",
+      "rol": "",
+      "id": 10
+    },
+    {
+      "nombre": "Via Láctea",
+      "correo": "sdfg",
+      "clave": "564654",
+      "rol": "",
+      "id": 11
     }
   ],
   "centrales": [
