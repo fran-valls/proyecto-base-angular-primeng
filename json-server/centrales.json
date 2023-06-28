@@ -336,38 +336,15 @@
       "admin": false
     },
     {
-      "nombre": "Otro",
-      "correo": "Otro@hotmail.com",
-      "clave": "1245",
+      "nombre": "nuevo1",
+      "correo": "nuevo1@hotmail.com",
+      "clave": "12345",
       "rol": {
-        "id": 3,
-        "rol": "visor"
+        "id": 1,
+        "rol": "administrador"
       },
+      "admin": true,
       "id": 8
-    },
-    {
-      "nombre": "Fran",
-      "correo": "admin@accenture.com",
-      "clave": "5467",
-      "rol": {
-        "id": 3,
-        "rol": "visor"
-      },
-      "id": 9
-    },
-    {
-      "nombre": "Via Láctea",
-      "correo": "sdfg",
-      "clave": "564654",
-      "rol": "",
-      "id": 10
-    },
-    {
-      "nombre": "Via Láctea",
-      "correo": "sdfg",
-      "clave": "564654",
-      "rol": "",
-      "id": 11
     }
   ],
   "centrales": [

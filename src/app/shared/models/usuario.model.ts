@@ -1,10 +1,10 @@
 import {Rol} from "./rol.model";
 
 export interface Usuario {
-  id:     number;
+  id?:    number;  // El ? significa opcional
   rol:    Rol;
   nombre: string;
   correo: string;
   clave:  string;
-  admin:  boolean;
+  admin?: boolean; // Opcional
 }

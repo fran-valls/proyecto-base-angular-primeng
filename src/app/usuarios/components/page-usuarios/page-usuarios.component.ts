@@ -4,7 +4,7 @@ import {Usuario} from "../../../shared/models/usuario.model";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ConfirmationService, Message, MessageService, PrimeIcons} from "primeng/api";
 import {Rol} from "../../../shared/models/rol.model";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-page-usuarios',
@@ -51,15 +51,21 @@ export class PageUsuariosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.inicializarFormulario();
+    this.cargarUsuarios();
+  }
+
+  public inicializarFormulario(){
+    const regexEmail: string = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+    const regexClave: string = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$";
     this.formUsuario = this.formBuilder.group(
       {
-        nombre: "",
-        correo: "",
-        clave: "",
-        rol:  ""
+        nombre: ["", [Validators.required], Validators.minLength(2), Validators.maxLength(30)],
+        correo: ["", [Validators.required, Validators.email, Validators.pattern(regexEmail)]],
+        clave:  ["", [Validators.required, Validators.pattern(regexClave)]],
+        rol:    ["", [Validators.required]]
       }
     );
-    this.cargarUsuarios();
   }
 
   public cargarUsuarios() {
@@ -146,6 +152,7 @@ export class PageUsuariosComponent implements OnInit {
   }
 
   public mostrarDialogoUsuario(){
+    this.formUsuario.reset(); //TODO Cuando estemos editando, no lo resetearemos
     this.dialogoNuevoUsuarioVisible = true;
   }
 
@@ -155,6 +162,18 @@ export class PageUsuariosComponent implements OnInit {
 
   public validarFormulario() {
     let usuario: Usuario = this.formUsuario.value;
+    // Así se añaden atributos a un JSON...
+    usuario = {
+      ...usuario, // ... + nombre del objeto
+      admin: (usuario.rol.id === 1) // atributo o atributos a añadir con nombre-valor separados por coma; El rol con id1 es el administrador
+    };
+
+
+    // Así se eliminan atributos a un JSON...(En la interfaz, el atributo tiene que estar marcado como opcional con '?')
+    // delete usuario.admin;  // Así se elimina el atributo admin del JSON
+
+
+    // Guardamos directamente, porque el botón para guardar solo lo habilitamos cuando el formulario...
     this.guardarUsuarioValidado(usuario);
     this.cargarUsuarios();
   }
@@ -183,9 +202,13 @@ export class PageUsuariosComponent implements OnInit {
         },
         complete: ()=>{
           this.guardandoUsuario=false;
-            this.ocultarDialogoUsuario();
+          this.ocultarDialogoUsuario();
         }
       }
     );
+  }
+
+  esCampoInValido(campo: string) {
+    return this.formUsuario.controls[campo].invalid && this.formUsuario.controls[campo].touched;
   }
 }

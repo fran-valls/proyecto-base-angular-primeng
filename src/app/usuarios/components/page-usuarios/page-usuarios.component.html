@@ -1,7 +1,5 @@
 <p-card>
-
-  <p-progressBar *ngIf="cargandoUsuarios" mode="indeterminate" styleClass="h-1rem"  ></p-progressBar>
-
+<!--  <p-progressBar *ngIf="cargandoUsuarios" mode="indeterminate" styleClass="h-1rem"  ></p-progressBar>-->
   <div class="flex justify-content-end mb-2 p-3 gap-3">
     <p-button
       (click)="cargarUsuarios()"
@@ -89,31 +87,70 @@
       <div class="formgrid grid">
         <div class="field col-12 md:col-6">
           <span class="p-float-label">
-            <input pInputText id="nombre" type="text" class="w-full" formControlName="nombre"/>
+            <input
+              pInputText
+              id="nombre"
+              type="text"
+              class="w-full"
+              formControlName="nombre"
+            />
             <label htmlFor="nombre">Nombre </label>
           </span>
         </div>
         <div class="field col-12 md:col-6">
           <span class="p-float-label">
-            <input pInputText id="correo" type="text" class="w-full" formControlName="correo"/>
+            <input
+              pInputText
+              id="correo"
+              type="text"
+              class="w-full"
+              formControlName="correo"
+              aria-labelledby="correo-ayuda"
+            />
             <label htmlFor="correo">Correo </label>
+            <small *ngIf="esCampoInValido('correo')" style="color: #e24c4c" id="correo-ayuda">El correo no es válido</small>
           </span>
         </div>
         <div class="field col-12 md:col-6">
           <span class="p-float-label">
 <!--            <input pInputText id="clave" type="password" class="w-full"/>-->
-            <p-password id="clave" class="w-full" [toggleMask]="true" formControlName="clave"></p-password>
-            <label htmlFor="clave">Contraseña </label>
+            <p-password
+              promptLabel="Introduce la contraseña"
+              weakLabel="Débil"
+              mediumLabel="Media"
+              strongLabel="Fuerte"
+              id="clave"
+              class="w-full"
+              [toggleMask]="true"
+              formControlName="clave"
+            >
+
+              <ng-template pTemplate="footer">
+                <p class="mt-2">Sugerencias</p>
+                <ul class="text-sm">
+                  <li>Al menos una minúscula</li>
+                  <li>Al menos una mayúscula</li>
+                  <li>Al menos un número</li>
+                  <li>Al menos 8 caracteres</li>
+                </ul>
+              </ng-template>
+            </p-password>
+
+            <!--            <label htmlFor="clave">Contraseña </label>-->
           </span>
         </div>
         <div class="field col-12 md:col-6">
-          <span class="p-float-label">
-            <p-dropdown  styleClass="w-full" appendTo="body" [options]="roles" optionLabel="rol" formControlName="rol"></p-dropdown>
-          </span>
+            <p-dropdown
+              styleClass="w-full"
+              [options]="roles"
+              optionLabel="rol"
+              appendTo="body"
+              placeholder="--Seleccione un rol--"
+              formControlName="rol">
+
+            </p-dropdown>
         </div>
-
       </div>
-
       <div class="flex justify-content-end">
         <p-button
           icon="pi pi-save"
@@ -121,12 +158,20 @@
           type="submit"
           styleClass="p-button-success"
           [loading]="guardandoUsuario"
+          [styleClass]="formUsuario.valid ? 'p-button-success': 'p-button-danger'"
+          [disabled]="formUsuario.invalid"
         ></p-button>
       </div>
     </form>
     <div class="p-message p-message-info">
       <code>
         <p>Value: {{formUsuario.value | json}}</p>
+        <p>Valid: {{formUsuario.valid }}</p>
+        <p>Invalid: {{formUsuario.invalid }}</p>
+        <p>Pristine: {{formUsuario.pristine }}</p>
+        <p>Touched: {{formUsuario.touched }}</p>
+        <p>Correo: {{formUsuario.controls['correo'].valid}}</p>
+        <p>Correo: {{formUsuario.controls['correo'].touched}}</p>
 
       </code>
 
