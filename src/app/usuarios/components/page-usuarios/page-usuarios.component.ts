@@ -15,16 +15,17 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
     ConfirmationService
   ]
 })
-export class PageUsuariosComponent implements OnInit {
+export class PageUsuariosComponent implements OnInit{
 
   // Datos de la página
   public usuarios: Usuario[];
-  public roles: Rol[]
+  public roles: Rol[];
 
   // Variables de estado de un proceso
   public cargandoUsuarios: boolean;
   public borrandoUsuario: boolean;
   public guardandoUsuario: boolean;
+  public estoyEditando: boolean;
 
   // Ventana de diálogo de nuevo usuario
   public dialogoNuevoUsuarioVisible: boolean;
@@ -32,22 +33,24 @@ export class PageUsuariosComponent implements OnInit {
   // Formulario Usuario
   public formUsuario!: FormGroup;
 
+
   constructor(
     private usuariosService: UsuariosService,
     private mensajeService: MessageService,
     private confirmarService: ConfirmationService,
     private formBuilder: FormBuilder
   ) {
-    this.usuarios = []
-    this.cargandoUsuarios = false;
-    this.borrandoUsuario = false;
-    this.dialogoNuevoUsuarioVisible =false;
-    this.guardandoUsuario =false;
+    this.usuarios = [];
     this.roles = [
       {id: 1, rol: "administrador"},
       {id: 2, rol: "usuario"},
       {id: 3, rol: "visor"}
-    ]
+    ];
+    this.cargandoUsuarios = false;
+    this.borrandoUsuario = false;
+    this.guardandoUsuario = false;
+    this.dialogoNuevoUsuarioVisible = false;
+    this.estoyEditando = false;
   }
 
   ngOnInit(): void {
@@ -55,13 +58,15 @@ export class PageUsuariosComponent implements OnInit {
     this.cargarUsuarios();
   }
 
-  public inicializarFormulario(){
-    const regexEmail: string = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
-    const regexClave: string = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$";
+  public inicializarFormulario() {
+    const regexEmail :string = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+    const claveDigitosMax: number = 8;
+    const regexClave :string = `^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{${claveDigitosMax},}$`;
     this.formUsuario = this.formBuilder.group(
       {
-        nombre: ["", [Validators.required], Validators.minLength(2), Validators.maxLength(30)],
-        correo: ["", [Validators.required, Validators.email, Validators.pattern(regexEmail)]],
+        id    : [0, []],
+        nombre: ["", [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+        correo: ["", [Validators.required, Validators.pattern(regexEmail)]],
         clave:  ["", [Validators.required, Validators.pattern(regexClave)]],
         rol:    ["", [Validators.required]]
       }
@@ -69,26 +74,34 @@ export class PageUsuariosComponent implements OnInit {
   }
 
   public cargarUsuarios() {
-    this.cargandoUsuarios = true;
+    this.cargandoUsuarios = true; // Empezamos a cargar...
     this.usuariosService.obtenerTodosUsuarios().subscribe(
       {
         next: (datos: Usuario[]) => {
           console.log("Han llegado los datos ", datos);
           this.usuarios = datos;
-          this.cargandoUsuarios = false;
+          this.cargandoUsuarios = false; // Ya hemos terminado de cargar...
         },
         error: (error: HttpErrorResponse) => {
-          console.log("Error al recuperar datos ", error);
-          this.cargandoUsuarios = false;
+          this.mensajeService.add({
+            summary: "Usuarios",
+            detail: "Hubo un error al obtener los usuarios. " + error.message,
+            severity: "error",
+            sticky: true
+          })
+          this.cargandoUsuarios = false; // Ya hemos terminado de cargar...
         }
       }
     );
   }
 
   public borrarUsuario(usuario: Usuario) {
-    if (this.borrandoUsuario){
+    // Si estamos en proceso de borrar el usuario, nos salimos de la función (esto es porque aunque esté el botón deshabilitado, sigue procesando los clicks de borrar, y aunque no borre nada, salen mensajes de error)
+    if (this.borrandoUsuario) {
       return
     }
+
+    // Y por aquí continuamos...
     this.borrandoUsuario = true;
     this.usuariosService.borrarUsuario(usuario).subscribe(
       {
@@ -102,39 +115,43 @@ export class PageUsuariosComponent implements OnInit {
           this.borrandoUsuario = false;
           this.cargarUsuarios();
         },
-        error: (error: HttpErrorResponse) => {
+        error: (datos: HttpErrorResponse) => {
           const mensaje: Message = {
             summary: "Borrar",
-            detail: "Hubo un error al borrar: " + error.message,
-            severity: "error"
+            detail: "Hubo un error al borrar. " + datos.message,
+            severity: "error",
+            sticky: true
+
           };
           this.borrandoUsuario = false;
           this.mensajeService.add(mensaje);
         }
-
       }
     );
   }
 
-  public confirmarBorrar(usuario:Usuario, evento: Event){
+  public confirmarBorrar(usuario: Usuario, evento: Event) {
     this.confirmarService.confirm({
       target: evento.target as EventTarget,
       message: `¿Quieres borrar a '${usuario.nombre}' ?`,
       icon: PrimeIcons.QUESTION,
-      acceptLabel: " Borrar ",
-      rejectLabel: " Cancelar ",
+      // acceptIcon: PrimeIcons.CHECK_SQUARE,
+      // rejectIcon: PrimeIcons.TIMES,
+      acceptLabel: "Borrar",
+      rejectLabel: "Cancelar",
       acceptButtonStyleClass: "p-button-danger",
       accept: () => {
+        //Este método borra el usuario, mostrando sus correspondientes toast
         this.borrarUsuario(usuario);
-
       },
       reject: () => {
         this.mensajeService.add({
-          summary: "borrar",
+          summary: "Cancelado",
           severity: "info",
-          detail: "No se ha borrado nada",
-        })
-      }
+          detail: "Operación cancelada. No se ha borrado nada.",
+        });
+      },
+
     });
   }
 
@@ -142,7 +159,7 @@ export class PageUsuariosComponent implements OnInit {
     switch (rol) {
       case "administrador":
         return "success";
-      case 'usuario':
+      case "usuario":
         return "primary";
       case "visor":
         return "warning";
@@ -151,30 +168,43 @@ export class PageUsuariosComponent implements OnInit {
     }
   }
 
-  public mostrarDialogoUsuario(){
-    this.formUsuario.reset(); //TODO Cuando estemos editando, no lo resetearemos
+  public mostrarDialogoUsuario(usuarioEditar?: Usuario) { // Con '?' decimos que el parámetro es opcional
+    // Decidimos si estamos editando o no, según si llega o nó un usuario
+    this.estoyEditando = usuarioEditar != undefined;
+
+    if(this.estoyEditando){
+      this.formUsuario.reset(usuarioEditar);
+    } else {
+      this.formUsuario.reset();
+    }
     this.dialogoNuevoUsuarioVisible = true;
   }
 
-  public ocultarDialogoUsuario(){
+  public ocultarDialogoUsuario() {
     this.dialogoNuevoUsuarioVisible = false;
   }
 
-  public validarFormulario() {
-    let usuario: Usuario = this.formUsuario.value;
-    // Así se añaden atributos a un JSON...
+  public validarFormulario()  {
+    let usuario : Usuario = this.formUsuario.value;
+    // Así se añaden atributos a un JSON. Usamos el operador spread '...'
+
+    // Añadimos el atributo admin
+
     usuario = {
-      ...usuario, // ... + nombre del objeto
-      admin: (usuario.rol.id === 1) // atributo o atributos a añadir con nombre-valor separados por coma; El rol con id1 es el administrador
+      ...usuario,
+      admin: (usuario.rol.id === 1), // el rol con id 1, es el administrador
     };
 
+    // Así se eliminan atributos a un JSON
+    //delete usuario.admin; // así se borra el atributo admin del objeto usuario
 
-    // Así se eliminan atributos a un JSON...(En la interfaz, el atributo tiene que estar marcado como opcional con '?')
-    // delete usuario.admin;  // Así se elimina el atributo admin del JSON
-
-
-    // Guardamos directamente, porque el botón para guardar solo lo habilitamos cuando el formulario...
-    this.guardarUsuarioValidado(usuario);
+    // Guardamos directamente, porque el botón para guardar solo lo habilitamos cuando el formulario es válido
+    if(this.estoyEditando){
+      this.modificarUsuario(usuario);
+    } else {
+      delete usuario.id; // Borramos la id, porque para guardar no necesitamos el atributo id (se podría poner a cero o dejarla a null)
+      this.guardarUsuarioValidado(usuario);
+    }
     this.cargarUsuarios();
   }
 
@@ -190,25 +220,56 @@ export class PageUsuariosComponent implements OnInit {
             icon: "pi pi-user-plus"
           });
           this.guardandoUsuario = false;
+          this.ocultarDialogoUsuario();
         },
         error: (datos: HttpErrorResponse) => {
           this.mensajeService.add({
             summary: "Nuevo usuario",
-            detail: "Ha habido un error" + datos.message,
+            detail: "Ha habido un error. " + datos.message,
             severity: "error",
+            sticky: true,
             icon: "pi pi-user-plus"
           });
-          this.guardandoUsuario = false
-        },
-        complete: ()=>{
-          this.guardandoUsuario=false;
+          this.guardandoUsuario = false;
           this.ocultarDialogoUsuario();
         }
       }
     );
   }
 
-  esCampoInValido(campo: string) {
+  public esCampoInvalido(campo: string) : boolean {
     return this.formUsuario.controls[campo].invalid && this.formUsuario.controls[campo].touched;
+  }
+
+  public marcarTodosLosCampos() {
+    //Al ponerlos todos como marcados, me mostrará directamente todos los errores
+    this.formUsuario.markAllAsTouched();
+  }
+
+  public modificarUsuario(usuario: Usuario) {
+    this.guardandoUsuario = true;
+    this.usuariosService.editarUsuario(usuario).subscribe(
+      {
+        next: (datos: Usuario) => {
+          this.mensajeService.add({
+            summary: "Editar",
+            detail: `Usuario actualizado correctamente `,
+            severity: "success"
+          });
+          this.guardandoUsuario = false;
+          this.ocultarDialogoUsuario();
+        },
+        error:(datos: HttpErrorResponse) => {
+          this.mensajeService.add({
+            summary: "Editar",
+            detail: `Error al editar. ${datos.message}`,
+            severity: "error",
+            sticky: true
+          });
+          this.guardandoUsuario = false;
+          this.ocultarDialogoUsuario();
+        }
+      }
+    );
   }
 }

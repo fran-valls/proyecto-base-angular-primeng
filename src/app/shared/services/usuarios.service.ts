@@ -25,4 +25,8 @@ export class UsuariosService {
   public guardarUsuario(usuario: Usuario): Observable<Usuario>{
     return this.httpClient.post<Usuario>(`${this.url}/usuarios`, usuario);
   }
+
+  public editarUsuario(usuario: Usuario): Observable<Usuario> {
+    return this.httpClient.patch<Usuario>(`${this.url}/usuarios/${usuario.id}`, usuario);
+  }
 }

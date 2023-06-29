@@ -283,12 +283,12 @@
     {
       "id": 3,
       "rol": {
-        "id": 3,
-        "rol": "visor"
+        "id": 2,
+        "rol": "usuario"
       },
-      "nombre": "Josefa",
+      "nombre": "Josefa 2",
       "correo": "visor@accenture.com",
-      "clave": "123456",
+      "clave": "123456Aa",
       "admin": false
     },
     {
@@ -297,9 +297,9 @@
         "id": 1,
         "rol": "administrador"
       },
-      "nombre": "Admin 1",
+      "nombre": "Admin 1--",
       "correo": "admin1@empresa.com",
-      "clave": "654321",
+      "clave": "654321Aa",
       "admin": true
     },
     {
@@ -345,6 +345,39 @@
       },
       "admin": true,
       "id": 8
+    },
+    {
+      "nombre": "nuevo 2",
+      "correo": "nuevo2@gmail.com",
+      "clave": "12345678Aa",
+      "rol": {
+        "id": 1,
+        "rol": "administrador"
+      },
+      "admin": true,
+      "id": 9
+    },
+    {
+      "nombre": "nuevo 333",
+      "correo": "nuevo33@gmail.com",
+      "clave": "Aa123456",
+      "rol": {
+        "id": 3,
+        "rol": "visor"
+      },
+      "admin": false,
+      "id": 10
+    },
+    {
+      "nombre": "wetwet",
+      "correo": "sdfgdsg@hotmail.com",
+      "clave": "23654Ad11",
+      "rol": {
+        "id": 3,
+        "rol": "visor"
+      },
+      "admin": false,
+      "id": 11
     }
   ],
   "centrales": [
